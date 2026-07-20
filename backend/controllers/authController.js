@@ -16,7 +16,7 @@ exports.registerUser = async (req, res) => {
       });
     }
 
-    // Create user (password will be hashed automatically)
+    // Create user
     const user = await User.create({
       name,
       email,
@@ -44,17 +44,15 @@ exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Find user
     const user = await User.findOne({ email });
 
-    // Check email and password
     if (!user || !(await user.matchPassword(password))) {
       return res.status(401).json({
         message: "Invalid email or password",
       });
     }
 
-    res.json({
+    res.status(200).json({
       _id: user._id,
       name: user.name,
       email: user.email,
@@ -71,5 +69,13 @@ exports.loginUser = async (req, res) => {
 // @desc   Get logged in user profile
 // @route  GET /api/auth/profile
 exports.getUserProfile = async (req, res) => {
-  res.json(req.user);
+  res.status(200).json({
+    success: true,
+    user: {
+      _id: req.user._id,
+      name: req.user.name,
+      email: req.user.email,
+      role: req.user.role,
+    },
+  });
 };

@@ -24,8 +24,7 @@ const getAttendance = async (req, res) => {
     try {
         const attendance = await Attendance.find()
             .populate("student")
-            .populate("subject")
-            .populate("teacher");
+            .populate("subject");
 
         res.status(200).json({
             success: true,
@@ -48,8 +47,7 @@ const getAttendanceByStudent = async (req, res) => {
             student: req.params.studentId
         })
         .populate("student")
-        .populate("subject")
-        .populate("teacher");
+        .populate("subject");
 
         res.status(200).json({
             success: true,

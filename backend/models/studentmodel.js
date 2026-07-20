@@ -21,4 +21,6 @@ const StudentSchema = new mongoose.Schema({
   email: String,
 }, { timestamps: true });
 
-module.exports = mongoose.model("Student", StudentSchema);
+const Student = mongoose.models.Student || mongoose.model("Student", StudentSchema);
+
+module.exports = Student;
