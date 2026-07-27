@@ -5,6 +5,7 @@ const cors = require("cors");
 
 const connectDB = require("./config/db");
 
+const adminRoutes = require("./routes/adminRoutes");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const studentRoutes = require("./routes/studentRoutes");
@@ -32,6 +33,7 @@ app.get("/api/health", (req, res) => {
   });
 });
 
+app.use("/api/admin",adminRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/students", studentRoutes);
