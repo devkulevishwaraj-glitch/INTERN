@@ -1,5 +1,6 @@
 const Student = require("../models/studentmodel");
 const Teacher = require("../models/Teacher");
+const Subject = require("../models/Subject"); // Add this line
 const Attendance = require("../models/Attendance");
 
 // Dashboard Statistics
@@ -7,13 +8,25 @@ const getDashboardStats = async (req, res) => {
     try {
         const totalStudents = await Student.countDocuments();
         const totalTeachers = await Teacher.countDocuments();
+        const totalSubjects = await Subject.countDocuments(); // Add this line
         const totalAttendance = await Attendance.countDocuments();
+
+        const presentStudents = await Attendance.countDocuments({
+            status: "Present"
+        });
+
+        const attendancePercentage =
+            totalStudents === 0
+                ? 0
+                : ((presentStudents / totalStudents) * 100).toFixed(2);
 
         res.status(200).json({
             success: true,
             totalStudents,
             totalTeachers,
-            totalAttendance
+            totalSubjects, // Add this line
+            totalAttendance,
+            attendancePercentage
         });
 
     } catch (error) {
@@ -88,6 +101,7 @@ const getTodayAttendance = async (req, res) => {
 const getAttendancePercentage = async (req, res) => {
     try {
         const totalStudents = await Student.countDocuments();
+
         const presentStudents = await Attendance.countDocuments({
             status: "Present"
         });
@@ -99,7 +113,7 @@ const getAttendancePercentage = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            attendancePercentage: `${percentage}%`
+            attendancePercentage: percentage
         });
 
     } catch (error) {

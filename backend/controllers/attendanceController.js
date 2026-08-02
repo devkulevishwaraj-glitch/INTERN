@@ -1,4 +1,5 @@
 const Attendance = require("../models/Attendance");
+const Student = require("../models/studentmodel");
 
 // Mark Attendance
 const markAttendance = async (req, res) => {
@@ -25,6 +26,38 @@ const getAttendance = async (req, res) => {
         const attendance = await Attendance.find()
             .populate("student")
             .populate("subject");
+
+        res.status(200).json({
+            success: true,
+            count: attendance.length,
+            data: attendance
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+// Get Logged-in Student Attendance
+const getMyAttendance = async (req, res) => {
+    try {
+        const student = await Student.findOne({ userId: req.user.id });
+
+        if (!student) {
+            return res.status(404).json({
+                success: false,
+                message: "Student not found"
+            });
+        }
+
+        const attendance = await Attendance.find({
+            student: student._id
+        })
+        .populate("student")
+        .populate("subject");
 
         res.status(200).json({
             success: true,
@@ -124,6 +157,7 @@ const deleteAttendance = async (req, res) => {
 module.exports = {
     markAttendance,
     getAttendance,
+    getMyAttendance,
     getAttendanceByStudent,
     updateAttendance,
     deleteAttendance

@@ -12,7 +12,7 @@ const {
 // Dashboard Statistics
 router.get("/", getDashboardStats);
 
-// Total Students
+// Total Studentscd 
 router.get("/students", getTotalStudents);
 
 // Total Teachers

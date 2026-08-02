@@ -22,7 +22,7 @@ const addSubject = async (req, res) => {
 // Get All Subjects
 const getSubjects = async (req, res) => {
     try {
-        const subjects = await Subject.find();
+        const subjects = await Subject.find().populate("teacher", "name");
 
         res.status(200).json({
             success: true,
@@ -41,7 +41,7 @@ const getSubjects = async (req, res) => {
 // Get Subject By ID
 const getSubjectById = async (req, res) => {
     try {
-        const subject = await Subject.findById(req.params.id);
+        const subject = await Subject.findById(req.params.id).populate("teacher", "name");
 
         if (!subject) {
             return res.status(404).json({
