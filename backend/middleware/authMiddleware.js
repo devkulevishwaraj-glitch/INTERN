@@ -18,7 +18,7 @@ const protect = async (req, res, next) => {
 
       // Get User (exclude password and __v)
       req.user = await User.findById(decoded.id).select("-password -__v");
-
+      
       // Check if user exists
       if (!req.user) {
         return res.status(401).json({
