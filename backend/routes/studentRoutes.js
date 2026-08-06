@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
 const {
@@ -6,11 +6,23 @@ const {
     getAllStudents,
     getStudentById,
     updateStudent,
-    deleteStudent
-} = require('../controllers/studentController');
+    deleteStudent,
+    getStudentDashboard
+} = require("../controllers/studentController");
+
+const { protect } = require("../middleware/authMiddleware");
+const authorize = require("../middleware/roleMiddleware");
+
+// Student Dashboard
+router.get(
+    "/dashboard",
+    protect,
+    authorize("student"),
+    getStudentDashboard
+);
 
 // Add a new student
-router.post("/",addStudent);
+router.post("/", addStudent);
 
 // Get all students
 router.get("/", getAllStudents);

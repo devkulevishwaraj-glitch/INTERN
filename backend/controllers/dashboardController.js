@@ -1,6 +1,6 @@
 const Student = require("../models/studentmodel");
 const Teacher = require("../models/Teacher");
-const Subject = require("../models/Subject"); // Add this line
+const Subject = require("../models/Subject");
 const Attendance = require("../models/Attendance");
 
 // Dashboard Statistics
@@ -8,31 +8,48 @@ const getDashboardStats = async (req, res) => {
     try {
         const totalStudents = await Student.countDocuments();
         const totalTeachers = await Teacher.countDocuments();
-        const totalSubjects = await Subject.countDocuments(); // Add this line
-        const totalAttendance = await Attendance.countDocuments();
+        const totalSubjects = await Subject.countDocuments();
+
+        // Today's attendance
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+
+        const endOfDay = new Date();
+        endOfDay.setHours(23, 59, 59, 999);
+
+        const totalAttendance = await Attendance.countDocuments({
+            date: {
+                $gte: startOfDay,
+                $lte: endOfDay,
+            },
+        });
 
         const presentStudents = await Attendance.countDocuments({
-            status: "Present"
+            status: "Present",
+            date: {
+                $gte: startOfDay,
+                $lte: endOfDay,
+            },
         });
 
         const attendancePercentage =
-            totalStudents === 0
+            totalAttendance === 0
                 ? 0
-                : ((presentStudents / totalStudents) * 100).toFixed(2);
+                : ((presentStudents / totalAttendance) * 100).toFixed(2);
 
         res.status(200).json({
             success: true,
             totalStudents,
             totalTeachers,
-            totalSubjects, // Add this line
+            totalSubjects,
             totalAttendance,
-            attendancePercentage
+            attendancePercentage,
         });
 
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: error.message
+            message: error.message,
         });
     }
 };
@@ -44,13 +61,13 @@ const getTotalStudents = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            totalStudents
+            totalStudents,
         });
 
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: error.message
+            message: error.message,
         });
     }
 };
@@ -62,13 +79,13 @@ const getTotalTeachers = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            totalTeachers
+            totalTeachers,
         });
 
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: error.message
+            message: error.message,
         });
     }
 };
@@ -76,23 +93,29 @@ const getTotalTeachers = async (req, res) => {
 // Today's Attendance
 const getTodayAttendance = async (req, res) => {
     try {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+
+        const endOfDay = new Date();
+        endOfDay.setHours(23, 59, 59, 999);
 
         const attendance = await Attendance.find({
-            date: { $gte: today }
+            date: {
+                $gte: startOfDay,
+                $lte: endOfDay,
+            },
         });
 
         res.status(200).json({
             success: true,
             total: attendance.length,
-            data: attendance
+            data: attendance,
         });
 
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: error.message
+            message: error.message,
         });
     }
 };
@@ -100,26 +123,26 @@ const getTodayAttendance = async (req, res) => {
 // Attendance Percentage
 const getAttendancePercentage = async (req, res) => {
     try {
-        const totalStudents = await Student.countDocuments();
+        const totalAttendance = await Attendance.countDocuments();
 
         const presentStudents = await Attendance.countDocuments({
-            status: "Present"
+            status: "Present",
         });
 
         const percentage =
-            totalStudents === 0
+            totalAttendance === 0
                 ? 0
-                : ((presentStudents / totalStudents) * 100).toFixed(2);
+                : ((presentStudents / totalAttendance) * 100).toFixed(2);
 
         res.status(200).json({
             success: true,
-            attendancePercentage: percentage
+            attendancePercentage: percentage,
         });
 
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: error.message
+            message: error.message,
         });
     }
 };
@@ -129,5 +152,5 @@ module.exports = {
     getTotalStudents,
     getTotalTeachers,
     getTodayAttendance,
-    getAttendancePercentage
+    getAttendancePercentage,
 };
