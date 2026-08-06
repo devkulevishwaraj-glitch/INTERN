@@ -15,3 +15,8 @@ export const updateStudent = (id, studentData) => {
 export const deleteStudent = (id) => {
   return api.delete(`/students/${id}`);
 };
+
+// Student Dashboard
+export const getStudentDashboard = () => {
+  return api.get("/students/dashboard");
+};
