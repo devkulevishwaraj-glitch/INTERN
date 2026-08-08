@@ -3,16 +3,20 @@ import Header from "./Header";
 
 function DashboardLayout({ children }) {
   return (
-    <div style={{ display: "flex" }}>
+    <div className="dashboard-layout">
+
       <Sidebar />
 
-      <div style={{ flex: 1 }}>
+      <div className="dashboard-content-wrapper">
+
         <Header />
 
-        <div style={{ padding: "20px" }}>
+        <main className="dashboard-page-content">
           {children}
-        </div>
+        </main>
+
       </div>
+
     </div>
   );
 }

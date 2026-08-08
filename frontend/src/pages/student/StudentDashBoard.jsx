@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
+import {
+  BookOpen,
+  ClipboardCheck,
+  TrendingUp,
+} from "lucide-react";
+
 import DashboardLayout from "../../components/dashboard/DashboardLayout";
-import { useAuth } from "../../context/AuthContext";
 import { getStudentDashboard } from "../../services/studentService";
 
 function StudentDashboard() {
-  const { user } = useAuth();
-
-  const [dashboard, setDashboard] = useState({
+  const [stats, setStats] = useState({
     attendancePercentage: 0,
-    totalSubjects: 0,
     presentDays: 0,
+    totalSubjects: 0,
   });
 
   useEffect(() => {
@@ -20,57 +23,145 @@ function StudentDashboard() {
     try {
       const res = await getStudentDashboard();
 
-      setDashboard({
-        attendancePercentage: res.data.attendancePercentage,
-        totalSubjects: res.data.totalSubjects,
-        presentDays: res.data.presentDays,
+      console.log("Student Dashboard:", res.data);
+
+      setStats({
+        attendancePercentage: res.data.attendancePercentage || 0,
+        presentDays: res.data.presentDays || 0,
+        totalSubjects: res.data.totalSubjects || 0,
       });
     } catch (error) {
-      console.error(error);
+      console.error("Student Dashboard Error:", error);
     }
   };
 
   return (
     <DashboardLayout>
-      <h1>Student Dashboard</h1>
+      <div className="student-dashboard-page">
 
-      <h2 style={{ marginTop: "20px" }}>
-        Welcome, {user?.name}
-      </h2>
+        {/* PAGE HEADER */}
+        <div className="student-dashboard-header">
+          <div className="student-dashboard-title">
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(220px,1fr))",
-          gap: "20px",
-          marginTop: "20px",
-        }}
-      >
-        <div style={cardStyle}>
-          <h3>Attendance Percentage</h3>
-          <h2>{dashboard.attendancePercentage}%</h2>
+            <div className="student-dashboard-title-icon">
+              <TrendingUp size={24} />
+            </div>
+
+            <div>
+              <h1>Student Dashboard</h1>
+              <p>
+                View your attendance and academic overview.
+              </p>
+            </div>
+
+          </div>
         </div>
 
-        <div style={cardStyle}>
-          <h3>Total Subjects</h3>
-          <h2>{dashboard.totalSubjects}</h2>
+        {/* STATISTICS */}
+        <div className="student-dashboard-stats">
+
+          {/* Attendance */}
+          <div className="student-dashboard-card">
+
+            <div className="student-dashboard-card-icon blue">
+              <TrendingUp size={22} />
+            </div>
+
+            <div>
+              <span>Attendance Percentage</span>
+
+              <strong>
+                {stats.attendancePercentage}%
+              </strong>
+            </div>
+
+          </div>
+
+          {/* Subjects */}
+          <div className="student-dashboard-card">
+
+            <div className="student-dashboard-card-icon green">
+              <BookOpen size={22} />
+            </div>
+
+            <div>
+              <span>Total Subjects</span>
+
+              <strong>
+                {stats.totalSubjects}
+              </strong>
+            </div>
+
+          </div>
+
+          {/* Present Days */}
+          <div className="student-dashboard-card">
+
+            <div className="student-dashboard-card-icon purple">
+              <ClipboardCheck size={22} />
+            </div>
+
+            <div>
+              <span>Present Days</span>
+
+              <strong>
+                {stats.presentDays}
+              </strong>
+            </div>
+
+          </div>
+
         </div>
 
-        <div style={cardStyle}>
-          <h3>Present Days</h3>
-          <h2>{dashboard.presentDays}</h2>
+        {/* ATTENDANCE OVERVIEW */}
+        <div className="student-attendance-overview">
+
+          <div className="student-overview-header">
+
+            <div>
+              <h2>Attendance Overview</h2>
+
+              <p>
+                Your overall attendance performance
+              </p>
+            </div>
+
+            <strong className="student-percentage">
+              {stats.attendancePercentage}%
+            </strong>
+
+          </div>
+
+          {/* PROGRESS BAR */}
+          <div className="student-progress-container">
+
+            <div
+              className="student-progress-bar"
+              style={{
+                width: `${Math.min(
+                  Number(stats.attendancePercentage) || 0,
+                  100
+                )}%`,
+              }}
+            ></div>
+
+          </div>
+
+          <div className="student-attendance-footer">
+
+            <span>Overall Attendance</span>
+
+            <strong>
+              {stats.attendancePercentage}%
+            </strong>
+
+          </div>
+
         </div>
+
       </div>
     </DashboardLayout>
   );
 }
-
-const cardStyle = {
-  background: "#2563eb",
-  color: "white",
-  padding: "20px",
-  borderRadius: "10px",
-  textAlign: "center",
-};
 
 export default StudentDashboard;

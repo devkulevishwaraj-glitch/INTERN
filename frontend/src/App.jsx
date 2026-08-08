@@ -2,38 +2,44 @@ import { Routes, Route } from "react-router-dom";
 
 import ProtectedRoute from "./components/ProtectedRoutes";
 
+// Public Pages
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
-// Dashboards
+// ================= DASHBOARDS =================
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import TeacherDashboard from "./pages/teacher/TeacherDashboard";
 import StudentDashboard from "./pages/student/StudentDashboard";
 
-// Teacher & Student Profile
+// ================= PROFILES =================
 import TeacherProfile from "./pages/teacher/Profile";
 import StudentProfile from "./pages/student/Profile";
 
-// Existing CRUD Pages
+// ================= ADMIN CRUD =================
 import Students from "./pages/Student";
 import Teachers from "./pages/Teacher";
 import Subjects from "./pages/Subject";
 
-// Reports
+// ================= REPORTS =================
 import Reports from "./pages/admin/Reports";
 
-// Attendance
+// ================= ATTENDANCE =================
 import Attendance from "./pages/Attendance";
 
 function App() {
   return (
     <Routes>
-      {/* Public Routes */}
+
+      {/* ================= PUBLIC ROUTES ================= */}
+
       <Route path="/" element={<Login />} />
+
       <Route path="/login" element={<Login />} />
+
       <Route path="/register" element={<Register />} />
 
-      {/* ================= ADMIN ================= */}
+
+      {/* ================= ADMIN ROUTES ================= */}
 
       <Route
         path="/admin"
@@ -80,7 +86,8 @@ function App() {
         }
       />
 
-      {/* ================= TEACHER ================= */}
+
+      {/* ================= TEACHER ROUTES ================= */}
 
       <Route
         path="/teacher"
@@ -100,7 +107,8 @@ function App() {
         }
       />
 
-      {/* ================= STUDENT ================= */}
+
+      {/* ================= STUDENT ROUTES ================= */}
 
       <Route
         path="/student"
@@ -120,7 +128,8 @@ function App() {
         }
       />
 
-      {/* ================= ATTENDANCE ================= */}
+
+      {/* ================= ATTENDANCE ROUTES ================= */}
 
       <Route
         path="/attendance"
@@ -130,6 +139,7 @@ function App() {
           </ProtectedRoute>
         }
       />
+
     </Routes>
   );
 }

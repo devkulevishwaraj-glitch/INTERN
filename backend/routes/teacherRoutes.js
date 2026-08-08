@@ -6,8 +6,29 @@ const {
     getTeachers,
     getTeacherById,
     updateTeacher,
-    deleteTeacher
+    deleteTeacher,
+    getTeacherProfile,
 } = require("../controllers/teacherController");
+
+const { protect } = require("../middleware/authMiddleware");
+const authorize = require("../middleware/roleMiddleware");
+
+
+// ==========================================
+// Teacher Profile
+// ==========================================
+
+router.get(
+    "/profile",
+    protect,
+    authorize("teacher"),
+    getTeacherProfile
+);
+
+
+// ==========================================
+// Teacher Management
+// ==========================================
 
 // Add Teacher
 router.post("/", addTeacher);
@@ -23,5 +44,6 @@ router.put("/:id", updateTeacher);
 
 // Delete Teacher
 router.delete("/:id", deleteTeacher);
+
 
 module.exports = router;

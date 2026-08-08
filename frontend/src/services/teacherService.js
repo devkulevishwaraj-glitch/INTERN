@@ -1,11 +1,45 @@
 import api from "./api";
 
-export const getTeachers = () => api.get("/teachers");
+// ==========================================
+// Get All Teachers
+// ==========================================
 
-export const addTeacher = (data) => api.post("/teachers", data);
+export const getTeachers = () => {
+  return api.get("/teachers");
+};
 
-export const updateTeacher = (id, data) =>
-  api.put(`/teachers/${id}`, data);
 
-export const deleteTeacher = (id) =>
-  api.delete(`/teachers/${id}`);
+// ==========================================
+// Add Teacher
+// ==========================================
+
+export const addTeacher = (data) => {
+  return api.post("/teachers", data);
+};
+
+
+// ==========================================
+// Update Teacher
+// ==========================================
+
+export const updateTeacher = (id, data) => {
+  return api.put(`/teachers/${id}`, data);
+};
+
+
+// ==========================================
+// Delete Teacher
+// ==========================================
+
+export const deleteTeacher = (id) => {
+  return api.delete(`/teachers/${id}`);
+};
+
+
+// ==========================================
+// Get Logged-in Teacher Profile
+// ==========================================
+
+export const getTeacherProfile = () => {
+  return api.get("/teachers/profile");
+};

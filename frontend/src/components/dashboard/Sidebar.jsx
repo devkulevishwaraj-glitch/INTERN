@@ -1,111 +1,196 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import {
+  LayoutDashboard,
+  Users,
+  UserRound,
+  BookOpen,
+  ClipboardCheck,
+  FileBarChart,
+  UserCircle,
+  GraduationCap,
+} from "lucide-react";
 
 function Sidebar() {
   const { user } = useAuth();
 
+  const getLinkClass = ({ isActive }) =>
+    `sidebar-link ${isActive ? "sidebar-link-active" : ""}`;
+
   return (
-    <div
-      style={{
-        width: "240px",
-        minHeight: "100vh",
-        background: "#1e293b",
-        color: "white",
-        padding: "20px",
-      }}
-    >
-      <h2>Attendance System</h2>
-      <hr />
+    <aside className="dashboard-sidebar">
 
-      {/* Admin Menu */}
+      {/* ================= LOGO ================= */}
+      <div className="sidebar-brand">
+
+        <div className="sidebar-brand-icon">
+          <GraduationCap size={26} />
+        </div>
+
+        <div>
+          <h2>
+            Attendance<span>Hub</span>
+          </h2>
+
+          <small>Management System</small>
+        </div>
+
+      </div>
+
+      <div className="sidebar-divider"></div>
+
+
+      {/* ================= ADMIN ================= */}
       {user?.role === "admin" && (
-        <>
-          <p>
-            <Link to="/admin" style={linkStyle}>
-              🏠 Dashboard
-            </Link>
-          </p>
+        <nav className="sidebar-menu">
 
-          <p>
-            <Link to="/students" style={linkStyle}>
-              👨‍🎓 Manage Students
-            </Link>
-          </p>
+          <p className="menu-title">MAIN MENU</p>
 
-          <p>
-            <Link to="/teachers" style={linkStyle}>
-              👨‍🏫 Manage Teachers
-            </Link>
-          </p>
+          <NavLink
+            to="/admin"
+            end
+            className={getLinkClass}
+          >
+            <LayoutDashboard size={19} />
+            <span>Dashboard</span>
+          </NavLink>
 
-          <p>
-            <Link to="/subjects" style={linkStyle}>
-              📚 Manage Subjects
-            </Link>
-          </p>
+          <NavLink
+            to="/students"
+            className={getLinkClass}
+          >
+            <Users size={19} />
+            <span>Manage Students</span>
+          </NavLink>
 
-          <p>
-            <Link to="/attendance" style={linkStyle}>
-              📝 Attendance
-            </Link>
-          </p>
+          <NavLink
+            to="/teachers"
+            className={getLinkClass}
+          >
+            <UserRound size={19} />
+            <span>Manage Teachers</span>
+          </NavLink>
 
-          <p>
-            <Link to="/admin/reports" style={linkStyle}>
-              📊 Reports
-            </Link>
-          </p>
-        </>
+          <NavLink
+            to="/subjects"
+            className={getLinkClass}
+          >
+            <BookOpen size={19} />
+            <span>Manage Subjects</span>
+          </NavLink>
+
+          <NavLink
+            to="/attendance"
+            className={getLinkClass}
+          >
+            <ClipboardCheck size={19} />
+            <span>Attendance</span>
+          </NavLink>
+
+          <NavLink
+            to="/admin/reports"
+            className={getLinkClass}
+          >
+            <FileBarChart size={19} />
+            <span>Reports</span>
+          </NavLink>
+
+        </nav>
       )}
 
-      {/* Teacher Menu */}
+
+      {/* ================= TEACHER ================= */}
       {user?.role === "teacher" && (
-        <>
-          <p>
-            <Link to="/teacher" style={linkStyle}>
-              🏠 Dashboard
-            </Link>
-          </p>
+        <nav className="sidebar-menu">
 
-          <p>
-            <Link to="/attendance" style={linkStyle}>
-              📝 Mark Attendance
-            </Link>
-          </p>
+          <p className="menu-title">TEACHER MENU</p>
 
-          <p>
-            <Link to="/teacher/profile" style={linkStyle}>
-              👤 Profile
-            </Link>
-          </p>
-        </>
+          {/* Dashboard - END IS IMPORTANT */}
+          <NavLink
+            to="/teacher"
+            end
+            className={getLinkClass}
+          >
+            <LayoutDashboard size={19} />
+            <span>Dashboard</span>
+          </NavLink>
+
+          <NavLink
+            to="/attendance"
+            className={getLinkClass}
+          >
+            <ClipboardCheck size={19} />
+            <span>Mark Attendance</span>
+          </NavLink>
+
+          <NavLink
+            to="/teacher/profile"
+            className={getLinkClass}
+          >
+            <UserCircle size={19} />
+            <span>Profile</span>
+          </NavLink>
+
+        </nav>
       )}
 
-      {/* Student Menu */}
+
+      {/* ================= STUDENT ================= */}
       {user?.role === "student" && (
-        <>
-          <p>
-            <Link to="/student" style={linkStyle}>
-              🏠 Dashboard
-            </Link>
-          </p>
+        <nav className="sidebar-menu">
 
-          <p>
-            <Link to="/student/profile" style={linkStyle}>
-              👤 Profile
-            </Link>
-          </p>
-        </>
+          <p className="menu-title">STUDENT MENU</p>
+
+          {/* Dashboard - END IS IMPORTANT */}
+          <NavLink
+            to="/student"
+            end
+            className={getLinkClass}
+          >
+            <LayoutDashboard size={19} />
+            <span>Dashboard</span>
+          </NavLink>
+
+          <NavLink
+            to="/student/profile"
+            className={getLinkClass}
+          >
+            <UserCircle size={19} />
+            <span>Profile</span>
+          </NavLink>
+
+        </nav>
       )}
-    </div>
+
+
+      {/* ================= BOTTOM USER ================= */}
+      <div className="sidebar-bottom-info">
+
+        <div className="sidebar-user-mini">
+
+          <div className="mini-avatar">
+            {user?.name?.charAt(0).toUpperCase() || "U"}
+          </div>
+
+          <div>
+            <strong>
+              {user?.name || "User"}
+            </strong>
+
+            <span>
+              {user?.role
+                ? user.role.charAt(0).toUpperCase() +
+                  user.role.slice(1)
+                : "User"}
+            </span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </aside>
   );
 }
-
-const linkStyle = {
-  color: "white",
-  textDecoration: "none",
-  display: "block",
-  padding: "8px 0",
-};
 
 export default Sidebar;
