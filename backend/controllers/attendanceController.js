@@ -20,6 +20,7 @@ const markAttendance = async (req, res) => {
     }
 };
 
+
 // Get All Attendance
 const getAttendance = async (req, res) => {
     try {
@@ -41,11 +42,30 @@ const getAttendance = async (req, res) => {
     }
 };
 
+
 // Get Logged-in Student Attendance
 const getMyAttendance = async (req, res) => {
     try {
-        const student = await Student.findOne({ userId: req.user.id });
+        let student = null;
 
+        // Get logged-in user ID
+        const userId = req.user?.id || req.user?._id;
+
+        // Find student using User ID
+        if (userId) {
+            student = await Student.findOne({
+                userId: userId
+            });
+        }
+
+        // Fallback: Find student using email
+        if (!student && req.user?.email) {
+            student = await Student.findOne({
+                email: req.user.email
+            });
+        }
+
+        // Student not found
         if (!student) {
             return res.status(404).json({
                 success: false,
@@ -53,11 +73,12 @@ const getMyAttendance = async (req, res) => {
             });
         }
 
+        // Get only this student's attendance
         const attendance = await Attendance.find({
             student: student._id
         })
-        .populate("student")
-        .populate("subject");
+            .populate("student")
+            .populate("subject");
 
         res.status(200).json({
             success: true,
@@ -66,12 +87,15 @@ const getMyAttendance = async (req, res) => {
         });
 
     } catch (error) {
+        console.log("Get My Attendance Error:", error);
+
         res.status(500).json({
             success: false,
             message: error.message
         });
     }
 };
+
 
 // Get Attendance By Student
 const getAttendanceByStudent = async (req, res) => {
@@ -79,8 +103,8 @@ const getAttendanceByStudent = async (req, res) => {
         const attendance = await Attendance.find({
             student: req.params.studentId
         })
-        .populate("student")
-        .populate("subject");
+            .populate("student")
+            .populate("subject");
 
         res.status(200).json({
             success: true,
@@ -95,6 +119,7 @@ const getAttendanceByStudent = async (req, res) => {
         });
     }
 };
+
 
 // Update Attendance
 const updateAttendance = async (req, res) => {
@@ -129,10 +154,13 @@ const updateAttendance = async (req, res) => {
     }
 };
 
+
 // Delete Attendance
 const deleteAttendance = async (req, res) => {
     try {
-        const attendance = await Attendance.findByIdAndDelete(req.params.id);
+        const attendance = await Attendance.findByIdAndDelete(
+            req.params.id
+        );
 
         if (!attendance) {
             return res.status(404).json({
@@ -153,6 +181,7 @@ const deleteAttendance = async (req, res) => {
         });
     }
 };
+
 
 module.exports = {
     markAttendance,

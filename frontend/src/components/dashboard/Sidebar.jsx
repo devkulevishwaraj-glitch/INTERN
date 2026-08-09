@@ -105,7 +105,6 @@ function Sidebar() {
 
           <p className="menu-title">TEACHER MENU</p>
 
-          {/* Dashboard - END IS IMPORTANT */}
           <NavLink
             to="/teacher"
             end
@@ -141,7 +140,6 @@ function Sidebar() {
 
           <p className="menu-title">STUDENT MENU</p>
 
-          {/* Dashboard - END IS IMPORTANT */}
           <NavLink
             to="/student"
             end
@@ -149,6 +147,15 @@ function Sidebar() {
           >
             <LayoutDashboard size={19} />
             <span>Dashboard</span>
+          </NavLink>
+
+          {/* My Attendance */}
+          <NavLink
+            to="/student/my-attendance"
+            className={getLinkClass}
+          >
+            <ClipboardCheck size={19} />
+            <span>My Attendance</span>
           </NavLink>
 
           <NavLink

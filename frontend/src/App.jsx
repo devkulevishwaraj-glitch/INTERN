@@ -15,6 +15,9 @@ import StudentDashboard from "./pages/student/StudentDashboard";
 import TeacherProfile from "./pages/teacher/Profile";
 import StudentProfile from "./pages/student/Profile";
 
+// ================= STUDENT =================
+import MyAttendance from "./pages/student/MyAttendance";
+
 // ================= ADMIN CRUD =================
 import Students from "./pages/Student";
 import Teachers from "./pages/Teacher";
@@ -124,6 +127,16 @@ function App() {
         element={
           <ProtectedRoute allowedRoles={["student"]}>
             <StudentProfile />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* My Attendance */}
+      <Route
+        path="/student/my-attendance"
+        element={
+          <ProtectedRoute allowedRoles={["student"]}>
+            <MyAttendance />
           </ProtectedRoute>
         }
       />
