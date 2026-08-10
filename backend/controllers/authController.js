@@ -47,6 +47,21 @@ exports.registerUser = async (req, res) => {
     }
 
     // ==========================================
+    // Restrict Admin Registration
+    // ==========================================
+    // Admin accounts cannot be created through
+    // the public registration API.
+    // Existing Admin accounts are not affected.
+
+    if (role === "admin") {
+      return res.status(403).json({
+        success: false,
+        message:
+          "Admin registration is not allowed. Please contact an existing administrator.",
+      });
+    }
+
+    // ==========================================
     // Student Validation
     // ==========================================
 

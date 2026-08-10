@@ -3,7 +3,6 @@ const Teacher = require("../models/Teacher");
 const Subject = require("../models/Subject");
 const Attendance = require("../models/Attendance");
 
-
 // ==========================================
 // Dashboard Statistics
 // ==========================================
@@ -37,9 +36,7 @@ const getDashboardStats = async (req, res) => {
                 totalAttendance === 0
                     ? 0
                     : (
-                        (presentStudents /
-                            totalAttendance) *
-                        100
+                        (presentStudents / totalAttendance) * 100
                     ).toFixed(2);
 
             return res.status(200).json({
@@ -63,25 +60,27 @@ const getDashboardStats = async (req, res) => {
             const userId =
                 req.user?.id || req.user?._id;
 
-            // Find teacher
+            // ==========================================
+            // Find Teacher Profile
+            // ==========================================
+
             let teacher = null;
 
             if (userId) {
                 teacher = await Teacher.findOne({
-                    userId,
+                    userId: userId,
                 });
             }
 
-            // Fallback email
+            // Fallback using email
             if (!teacher && req.user?.email) {
                 teacher = await Teacher.findOne({
                     email: req.user.email,
                 });
             }
 
-            // Teacher profile doesn't exist
+            // Teacher profile not found
             if (!teacher) {
-
                 return res.status(200).json({
                     success: true,
                     role: "teacher",
@@ -94,22 +93,31 @@ const getDashboardStats = async (req, res) => {
 
 
             // ==========================================
-            // Teacher's Subjects
+            // FIND TEACHER'S SUBJECTS
+            // Subject uses "teacher" field
             // ==========================================
 
             const subjects = await Subject.find({
-                teacherId: teacher._id,
+                teacher: teacher._id,
             });
 
             const totalSubjects = subjects.length;
 
+            // Get subject IDs
+            const subjectIds = subjects.map(
+                (subject) => subject._id
+            );
+
 
             // ==========================================
-            // Teacher's Attendance
+            // FIND TEACHER'S ATTENDANCE
+            // Attendance is connected through Subject
             // ==========================================
 
             const attendance = await Attendance.find({
-                teacher: teacher._id,
+                subject: {
+                    $in: subjectIds,
+                },
             });
 
             const totalAttendance =
@@ -117,7 +125,7 @@ const getDashboardStats = async (req, res) => {
 
 
             // ==========================================
-            // Present Attendance
+            // PRESENT ATTENDANCE
             // ==========================================
 
             const presentStudents =
@@ -128,21 +136,20 @@ const getDashboardStats = async (req, res) => {
 
 
             // ==========================================
-            // Attendance Percentage
+            // ATTENDANCE PERCENTAGE
             // ==========================================
 
             const attendancePercentage =
                 totalAttendance === 0
                     ? 0
                     : (
-                        (presentStudents /
-                            totalAttendance) *
-                        100
+                        (presentStudents / totalAttendance) * 100
                     ).toFixed(2);
 
 
             // ==========================================
-            // Students handled by this teacher
+            // STUDENTS HANDLED BY TEACHER
+            // Attendance uses "student" field
             // ==========================================
 
             const studentIds = [
@@ -163,6 +170,10 @@ const getDashboardStats = async (req, res) => {
                 studentIds.length;
 
 
+            // ==========================================
+            // TEACHER DASHBOARD RESPONSE
+            // ==========================================
+
             return res.status(200).json({
                 success: true,
                 role: "teacher",
@@ -175,12 +186,13 @@ const getDashboardStats = async (req, res) => {
 
 
         // ==========================================
-        // STUDENT
+        // OTHER ROLES
         // ==========================================
 
         return res.status(403).json({
             success: false,
-            message: "Dashboard not available for this role",
+            message:
+                "Dashboard not available for this role",
         });
 
     } catch (error) {
@@ -265,7 +277,11 @@ const getTodayAttendance = async (req, res) => {
             },
         };
 
-        // Teacher-specific attendance
+
+        // ==========================================
+        // Teacher-specific Attendance
+        // ==========================================
+
         if (req.user.role === "teacher") {
 
             const userId =
@@ -274,21 +290,42 @@ const getTodayAttendance = async (req, res) => {
             const teacher =
                 await Teacher.findOne({
                     $or: [
-                        { userId },
+                        { userId: userId },
                         { email: req.user.email },
                     ],
                 });
 
-            if (teacher) {
-                filter.teacher = teacher._id;
-            } else {
+            if (!teacher) {
                 return res.status(200).json({
                     success: true,
                     total: 0,
                     data: [],
                 });
             }
+
+
+            // Find teacher's subjects
+            const subjects =
+                await Subject.find({
+                    teacher: teacher._id,
+                });
+
+            const subjectIds =
+                subjects.map(
+                    (subject) => subject._id
+                );
+
+
+            // Attendance is connected through subject
+            filter.subject = {
+                $in: subjectIds,
+            };
         }
+
+
+        // ==========================================
+        // Get Attendance
+        // ==========================================
 
         const attendance =
             await Attendance.find(filter);
@@ -300,6 +337,11 @@ const getTodayAttendance = async (req, res) => {
         });
 
     } catch (error) {
+
+        console.log(
+            "Today's Attendance Error:",
+            error
+        );
 
         res.status(500).json({
             success: false,
@@ -317,7 +359,11 @@ const getAttendancePercentage = async (req, res) => {
 
         const filter = {};
 
-        // Teacher-specific
+
+        // ==========================================
+        // Teacher-specific Attendance
+        // ==========================================
+
         if (req.user.role === "teacher") {
 
             const userId =
@@ -326,10 +372,11 @@ const getAttendancePercentage = async (req, res) => {
             const teacher =
                 await Teacher.findOne({
                     $or: [
-                        { userId },
+                        { userId: userId },
                         { email: req.user.email },
                     ],
                 });
+
 
             if (!teacher) {
                 return res.status(200).json({
@@ -338,11 +385,39 @@ const getAttendancePercentage = async (req, res) => {
                 });
             }
 
-            filter.teacher = teacher._id;
+
+            // Find teacher's subjects
+            const subjects =
+                await Subject.find({
+                    teacher: teacher._id,
+                });
+
+            const subjectIds =
+                subjects.map(
+                    (subject) => subject._id
+                );
+
+
+            // Attendance through subject
+            filter.subject = {
+                $in: subjectIds,
+            };
         }
 
+
+        // ==========================================
+        // Total Attendance
+        // ==========================================
+
         const totalAttendance =
-            await Attendance.countDocuments(filter);
+            await Attendance.countDocuments(
+                filter
+            );
+
+
+        // ==========================================
+        // Present Attendance
+        // ==========================================
 
         const presentStudents =
             await Attendance.countDocuments({
@@ -350,21 +425,32 @@ const getAttendancePercentage = async (req, res) => {
                 status: "Present",
             });
 
+
+        // ==========================================
+        // Calculate Percentage
+        // ==========================================
+
         const percentage =
             totalAttendance === 0
                 ? 0
                 : (
                     (presentStudents /
-                        totalAttendance) *
-                    100
+                        totalAttendance) * 100
                 ).toFixed(2);
+
 
         res.status(200).json({
             success: true,
-            attendancePercentage: percentage,
+            attendancePercentage:
+                percentage,
         });
 
     } catch (error) {
+
+        console.log(
+            "Attendance Percentage Error:",
+            error
+        );
 
         res.status(500).json({
             success: false,
@@ -377,6 +463,7 @@ const getAttendancePercentage = async (req, res) => {
 // ==========================================
 // Export
 // ==========================================
+
 module.exports = {
     getDashboardStats,
     getTotalStudents,

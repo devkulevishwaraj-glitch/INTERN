@@ -10,17 +10,32 @@ const {
     deleteAttendance
 } = require("../controllers/attendanceController");
 
-const { protect } = require("../middleware/authMiddleware");
-const  authorize  = require("../middleware/roleMiddleware");
+const protect = require("../middleware/authMiddleware");
+const authorize = require("../middleware/roleMiddleware");
 
 // Mark Attendance (Teacher/Admin)
-router.post("/", protect, authorize("teacher", "admin"), markAttendance);
+router.post(
+    "/",
+    protect,
+    authorize("teacher", "admin"),
+    markAttendance
+);
 
 // Get Logged-in Student Attendance
-router.get("/my", protect, authorize("student"), getMyAttendance);
+router.get(
+    "/my",
+    protect,
+    authorize("student"),
+    getMyAttendance
+);
 
 // Get All Attendance (Admin/Teacher)
-router.get("/", protect, authorize("admin", "teacher"), getAttendance);
+router.get(
+    "/",
+    protect,
+    authorize("admin", "teacher"),
+    getAttendance
+);
 
 // Get Attendance By Student ID (Admin/Teacher)
 router.get(
@@ -38,11 +53,11 @@ router.put(
     updateAttendance
 );
 
-// Delete Attendance (Admin Only)
+// Delete Attendance (Admin/Teacher)
 router.delete(
     "/:id",
     protect,
-    authorize("admin","teacher"),
+    authorize("admin", "teacher"),
     deleteAttendance
 );
 

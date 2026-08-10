@@ -10,7 +10,7 @@ const {
     getTeacherProfile,
 } = require("../controllers/teacherController");
 
-const { protect } = require("../middleware/authMiddleware");
+const  protect  = require("../middleware/authMiddleware");
 const authorize = require("../middleware/roleMiddleware");
 
 
