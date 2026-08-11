@@ -1,6 +1,6 @@
 const User = require("../models/User");
 const Student = require("../models/studentmodel");
-const Teacher = require("../models/Teacher");
+const Teacher = require("../models/teacher");
 const generateToken = require("../utils/generateToken");
 
 // ==========================================
