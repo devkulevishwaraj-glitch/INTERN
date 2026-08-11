@@ -80,7 +80,7 @@ function AdminDashboard() {
       }
 
       const response = await fetch(
-        "http://localhost:5000/api/users/create-admin",
+        "https://intern-sepia-nine.vercel.app/api/users/create-admin",
         {
           method: "POST",
 
