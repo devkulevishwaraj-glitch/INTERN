@@ -25,13 +25,12 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
-  "https://intern-isyi-966bc9430-avi-4b82.vercel.app",
+  "https://intern-isyi.vercel.app",
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow Postman, Thunder Client and requests without an origin
       if (!origin) {
         return callback(null, true);
       }
