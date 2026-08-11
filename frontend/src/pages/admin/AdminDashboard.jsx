@@ -80,7 +80,7 @@ function AdminDashboard() {
       }
 
       const response = await fetch(
-        "https://intern-sepia-nine.vercel.app/api/users/create-admin",
+        `${import.meta.env.VITE_API_URL}/users/create-admin`,
         {
           method: "POST",
 
