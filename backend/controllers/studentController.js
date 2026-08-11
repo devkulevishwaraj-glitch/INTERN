@@ -23,6 +23,7 @@ const addStudent = async (req, res) => {
             });
         }
 
+        // Check existing user
         const existingUser = await User.findOne({ email });
 
         if (existingUser) {
@@ -32,6 +33,7 @@ const addStudent = async (req, res) => {
             });
         }
 
+        // Check existing student
         const existingStudent = await Student.findOne({ rollNo });
 
         if (existingStudent) {
@@ -64,20 +66,21 @@ const addStudent = async (req, res) => {
         try {
             await student.save();
         } catch (studentError) {
+            // Roll back User if Student creation fails
             await User.findByIdAndDelete(user._id);
             throw studentError;
         }
 
-        res.status(201).json({
+        return res.status(201).json({
             success: true,
             message: "Student added successfully",
             data: student,
         });
 
     } catch (error) {
-        console.log("Add Student Error:", error);
+        console.error("Add Student Error:", error);
 
-        res.status(400).json({
+        return res.status(500).json({
             success: false,
             message: error.message,
         });
@@ -92,16 +95,16 @@ const getAllStudents = async (req, res) => {
     try {
         const students = await Student.find();
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             count: students.length,
             data: students,
         });
 
     } catch (error) {
-        console.log("Get All Students Error:", error);
+        console.error("Get All Students Error:", error);
 
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: error.message,
         });
@@ -123,15 +126,15 @@ const getStudentById = async (req, res) => {
             });
         }
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             data: student,
         });
 
     } catch (error) {
-        console.log("Get Student Error:", error);
+        console.error("Get Student Error:", error);
 
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: error.message,
         });
@@ -152,6 +155,7 @@ const updateStudent = async (req, res) => {
             email,
         } = req.body;
 
+        // Find student
         const student = await Student.findById(req.params.id);
 
         if (!student) {
@@ -161,11 +165,14 @@ const updateStudent = async (req, res) => {
             });
         }
 
+        // ==========================================
         // Check Roll Number Conflict
+        // ==========================================
+
         if (rollNo && rollNo !== student.rollNo) {
             const existingStudent = await Student.findOne({
-                rollNo,
-                _id: { $ne: req.params.id },
+                rollNo: rollNo,
+                _id: { $ne: student._id },
             });
 
             if (existingStudent) {
@@ -176,10 +183,13 @@ const updateStudent = async (req, res) => {
             }
         }
 
+        // ==========================================
         // Check Email Conflict
+        // ==========================================
+
         if (email && email !== student.email) {
             const existingUser = await User.findOne({
-                email,
+                email: email,
                 _id: { $ne: student.userId },
             });
 
@@ -191,40 +201,63 @@ const updateStudent = async (req, res) => {
             }
         }
 
-        // Update Student
-        student.name = name;
-        student.rollNo = rollNo;
-        student.department = department;
-        student.semester = semester;
-        student.email = email;
+        // ==========================================
+        // Update Student Fields
+        // ==========================================
 
-        await student.save();
-
-        // Update Linked User
-        if (student.userId) {
-            await User.findByIdAndUpdate(
-                student.userId,
-                {
-                    name,
-                    email,
-                },
-                {
-                    new: true,
-                    runValidators: true,
-                }
-            );
+        if (name !== undefined) {
+            student.name = name;
         }
 
-        res.status(200).json({
+        if (rollNo !== undefined) {
+            student.rollNo = rollNo;
+        }
+
+        if (department !== undefined) {
+            student.department = department;
+        }
+
+        if (semester !== undefined) {
+            student.semester = semester;
+        }
+
+        if (email !== undefined) {
+            student.email = email;
+        }
+
+        // Save Student
+        await student.save();
+
+        // ==========================================
+        // Update Linked User
+        // ==========================================
+
+        if (student.userId) {
+            const user = await User.findById(student.userId);
+
+            if (user) {
+                if (name !== undefined) {
+                    user.name = name;
+                }
+
+                if (email !== undefined) {
+                    user.email = email;
+                }
+
+                await user.save();
+            }
+        }
+
+        return res.status(200).json({
             success: true,
             message: "Student updated successfully",
             data: student,
         });
 
     } catch (error) {
-        console.log("Update Student Error:", error);
+        console.error("Update Student Error:", error);
 
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: error.message,
         });
@@ -254,15 +287,15 @@ const deleteStudent = async (req, res) => {
             await User.findByIdAndDelete(student.userId);
         }
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: "Student deleted successfully",
         });
 
     } catch (error) {
-        console.log("Delete Student Error:", error);
+        console.error("Delete Student Error:", error);
 
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: error.message,
         });
@@ -333,7 +366,7 @@ const getStudentDashboard = async (req, res) => {
 
         const totalSubjects = uniqueSubjectIds.length;
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
 
             student: {
@@ -352,9 +385,9 @@ const getStudentDashboard = async (req, res) => {
         });
 
     } catch (error) {
-        console.log("Student Dashboard Error:", error);
+        console.error("Student Dashboard Error:", error);
 
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: error.message,
         });
@@ -376,7 +409,7 @@ const getStudentProfile = async (req, res) => {
             });
         }
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
 
             data: {
@@ -392,9 +425,9 @@ const getStudentProfile = async (req, res) => {
         });
 
     } catch (error) {
-        console.log("Get Student Profile Error:", error);
+        console.error("Get Student Profile Error:", error);
 
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: error.message,
         });
