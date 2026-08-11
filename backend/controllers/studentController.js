@@ -166,6 +166,26 @@ const updateStudent = async (req, res) => {
         }
 
         // ==========================================
+        // Fix Missing User ID
+        // ==========================================
+
+        if (!student.userId) {
+            const user = await User.findOne({
+                email: student.email,
+            });
+
+            if (user) {
+                student.userId = user._id;
+            } else {
+                return res.status(400).json({
+                    success: false,
+                    message:
+                        "Student does not have a linked user account. Please create a user account for this student first.",
+                });
+            }
+        }
+
+        // ==========================================
         // Check Roll Number Conflict
         // ==========================================
 
@@ -178,7 +198,8 @@ const updateStudent = async (req, res) => {
             if (existingStudent) {
                 return res.status(400).json({
                     success: false,
-                    message: "A student with this roll number already exists",
+                    message:
+                        "A student with this roll number already exists",
                 });
             }
         }
@@ -196,13 +217,14 @@ const updateStudent = async (req, res) => {
             if (existingUser) {
                 return res.status(400).json({
                     success: false,
-                    message: "A user with this email already exists",
+                    message:
+                        "A user with this email already exists",
                 });
             }
         }
 
         // ==========================================
-        // Update Student Fields
+        // Update Student
         // ==========================================
 
         if (name !== undefined) {
@@ -232,21 +254,23 @@ const updateStudent = async (req, res) => {
         // Update Linked User
         // ==========================================
 
-        if (student.userId) {
-            const user = await User.findById(student.userId);
+        const user = await User.findById(student.userId);
 
-            if (user) {
-                if (name !== undefined) {
-                    user.name = name;
-                }
-
-                if (email !== undefined) {
-                    user.email = email;
-                }
-
-                await user.save();
+        if (user) {
+            if (name !== undefined) {
+                user.name = name;
             }
+
+            if (email !== undefined) {
+                user.email = email;
+            }
+
+            await user.save();
         }
+
+        // ==========================================
+        // Response
+        // ==========================================
 
         return res.status(200).json({
             success: true,
