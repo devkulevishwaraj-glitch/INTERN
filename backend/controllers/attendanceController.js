@@ -1,4 +1,4 @@
-const Attendance = require("../models/Attendance");
+const Attendance = require("../models/attendance");
 const Student = require("../models/studentmodel");
 
 // Mark Attendance

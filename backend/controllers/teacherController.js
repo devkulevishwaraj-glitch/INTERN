@@ -1,5 +1,5 @@
 const Teacher = require("../models/teacher");
-const User = require("../models/User");
+const User = require("../models/user");
 
 // ==========================================
 // Add Teacher

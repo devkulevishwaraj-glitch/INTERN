@@ -1,6 +1,6 @@
 const Student = require("../models/studentmodel");
-const User = require("../models/User");
-const Attendance = require("../models/Attendance");
+const User = require("../models/user");
+const Attendance = require("../models/attendance");
 
 // ==========================================
 // Add Student

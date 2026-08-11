@@ -1,7 +1,7 @@
 const Student = require("../models/studentmodel");
 const Teacher = require("../models/teacher");
-const Subject = require("../models/Subject");
-const Attendance = require("../models/Attendance");
+const Subject = require("../models/subject");
+const Attendance = require("../models/attendance");
 
 // @desc    Dashboard Summary
 // @route   GET /api/admin/dashboard

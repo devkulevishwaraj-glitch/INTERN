@@ -1,4 +1,4 @@
-const User = require("../models/User");
+const User = require("../models/user");
 const Student = require("../models/studentmodel");
 const Teacher = require("../models/teacher");
 const generateToken = require("../utils/generateToken");
