@@ -13,49 +13,50 @@ const teacherRoutes = require("./routes/teacherRoutes");
 const subjectRoutes = require("./routes/subjectRoutes");
 const attendanceRoutes = require("./routes/attendanceRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
+
 const errorMiddleware = require("./middleware/errorMiddleware");
 
 const app = express();
 
-// ===============================
-// CORS
-// ===============================
+/* =========================
+   CORS
+========================= */
 
 app.use(
   cors({
-    origin: true,
-    credentials: true,
+    origin: [
+      "https://intern-isyi.vercel.app",
+      "http://localhost:5173",
+    ],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
   })
 );
 
-// Handle preflight requests
-app.options("*", cors());
-
-// ===============================
-// Body Parser
-// ===============================
+/* =========================
+   MIDDLEWARE
+========================= */
 
 app.use(express.json());
 
-// ===============================
-// Connect MongoDB
-// ===============================
+/* =========================
+   DATABASE
+========================= */
 
 connectDB();
 
-// ===============================
-// Home Route
-// ===============================
+/* =========================
+   HOME
+========================= */
 
 app.get("/", (req, res) => {
   res.send("Welcome to the Attendance Management System API");
 });
 
-// ===============================
-// Health Check
-// ===============================
+/* =========================
+   HEALTH CHECK
+========================= */
 
 app.get("/api/health", (req, res) => {
   res.status(200).json({
@@ -64,9 +65,9 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// ===============================
-// Routes
-// ===============================
+/* =========================
+   ROUTES
+========================= */
 
 app.use("/api/admin", adminRoutes);
 app.use("/api/auth", authRoutes);
@@ -77,9 +78,9 @@ app.use("/api/subjects", subjectRoutes);
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 
-// ===============================
-// 404 Route
-// ===============================
+/* =========================
+   404
+========================= */
 
 app.use((req, res) => {
   res.status(404).json({
@@ -88,15 +89,15 @@ app.use((req, res) => {
   });
 });
 
-// ===============================
-// Error Middleware
-// ===============================
+/* =========================
+   ERROR HANDLER
+========================= */
 
 app.use(errorMiddleware);
 
-// ===============================
-// Local Development
-// ===============================
+/* =========================
+   LOCAL DEVELOPMENT
+========================= */
 
 const PORT = process.env.PORT || 5000;
 
@@ -106,8 +107,8 @@ if (require.main === module) {
   });
 }
 
-// ===============================
-// Vercel
-// ===============================
+/* =========================
+   VERCEL
+========================= */
 
 module.exports = app;
