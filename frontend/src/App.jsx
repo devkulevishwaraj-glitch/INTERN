@@ -9,7 +9,7 @@ import Register from "./pages/Register";
 // ================= DASHBOARDS =================
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import TeacherDashboard from "./pages/teacher/TeacherDashboard";
-import StudentDashboard from "./pages/student/StudentDashboard";
+import StudentDashboard from "./pages/student/StudentDashBoard";
 
 // ================= PROFILES =================
 import TeacherProfile from "./pages/teacher/Profile";
