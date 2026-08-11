@@ -31,7 +31,7 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow Postman, Thunder Client and server-to-server requests
+      // Allow Postman, Thunder Client and requests without an origin
       if (!origin) {
         return callback(null, true);
       }
@@ -40,12 +40,22 @@ app.use(
         return callback(null, true);
       }
 
-      return callback(null, false);
+      return callback(new Error("Not allowed by CORS"));
     },
 
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    methods: [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE",
+      "PATCH",
+      "OPTIONS",
+    ],
 
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+    ],
 
     credentials: true,
   })
@@ -68,7 +78,9 @@ connectDB();
 ========================= */
 
 app.get("/", (req, res) => {
-  res.status(200).send("Welcome to the Attendance Management System API");
+  res.status(200).send(
+    "Welcome to the Attendance Management System API"
+  );
 });
 
 /* =========================
